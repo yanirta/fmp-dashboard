@@ -1,57 +1,46 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import './App.css';
+//https://material-ui.com/
 
+
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import PrimarySearchAppBar from './PrimarySearchAppBar';
+
+const fmp_api = "https://fmpcloud.io/api/v3";
+const from_profile_api = fmp_api + '/profile/'
 function App() {
-  const [date, setDate] = useState(null);
-  useEffect(() => {
-    async function getDate() {
-      const res = await fetch('/api/date');
-      const newDate = await res.text();
-      setDate(newDate);
-    }
-    getDate();
-  }, []);
+  const [symbol, setSymbol] = useState("");
+  // useEffect(() => { retrieveProfile('AAPL') }, [])
+
   return (
-    <main>
-      <h1>Create React App + Go API</h1>
-      <h2>
-        Deployed with{' '}
-        <a
-          href="https://vercel.com/docs"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Vercel
-        </a>
-        !
-      </h2>
-      <p>
-        <a
-          href="https://github.com/vercel/vercel/tree/main/examples/create-react-app"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          This project
-        </a>{' '}
-        was bootstrapped with{' '}
-        <a href="https://facebook.github.io/create-react-app/">
-          Create React App
-        </a>{' '}
-        and contains three directories, <code>/public</code> for static assets,{' '}
-        <code>/src</code> for components and content, and <code>/api</code>{' '}
-        which contains a serverless <a href="https://golang.org/">Go</a>{' '}
-        function. See{' '}
-        <a href="/api/date">
-          <code>api/date</code> for the Date API with Go
-        </a>
-        .
-      </p>
-      <br />
-      <h2>The date according to Go is:</h2>
-      <p>{date ? date : 'Loading date...'}</p>
-    </main>
+    <div>
+      <CssBaseline />
+      <PrimarySearchAppBar onSearch={setSymbol}></PrimarySearchAppBar>
+      <h1>Financial Modeling Prep Dashboard</h1>
+      <Profile symbol={symbol}></Profile>
+      {/* <p> api url = {fmp_api}</p> */}
+      {/* <p> apikey={process.env.REACT_APP_APIKEY}</p> */}
+    </div>
   );
 }
 
+function Profile({ symbol }) {
+  if (!symbol || symbol == undefined || symbol === "") { return null; }
+  const [data, setData] = useState();
+  const retrieveProfile = async (symbol) => {
+    const fmp_profile = new URL(symbol, from_profile_api);
+    fmp_profile.searchParams.append("apikey", process.env.REACT_APP_APIKEY);
+    var res = await fetch(fmp_profile).catch((e) => alert(e));
+    var data = await res.json();
+    setData(JSON.stringify(data))
+  }
+
+  retrieveProfile(symbol);
+  // useEffect(() => { retrieveProfile(symbol) }, [])
+
+  return (
+    <p>
+      {data}
+    </p>);
+}
 export default App;
