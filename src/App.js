@@ -25,7 +25,7 @@ function App() {
 }
 
 function Profile({ symbol }) {
-  if (!symbol || symbol == undefined || symbol === "") { return null; }
+  if (!symbol || symbol === undefined || symbol === "") { return null; }
   const [data, setData] = useState();
   const retrieveProfile = async (symbol) => {
     const fmp_profile = new URL(symbol, from_profile_api);
